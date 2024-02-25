@@ -18,8 +18,6 @@ services:
     networks:
       default:
         aliases: ["eth1", "eth2"]
-    ports:
-      - 80:80
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
