@@ -1,0 +1,31 @@
+version: "3.9"
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: 100m
+      max-file: "3"
+      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
+
+services:
+  traefik:
+    image: traefik:${TRAEFIK_TAG:-latest}
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      default:
+        aliases: ["eth1", "eth2"]
+    ports:
+      - 80:80
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config.yaml:/var/config/config.yaml:ro
+    command:
+      - --log.level=${LOG_LEVEL:-info}
+      - --providers.file.filename=/var/config/config.yaml
+      - --entrypoints.http.address=:${TRAEFIK_WEB_HTTP_PORT:-80}
+    <<: *logging

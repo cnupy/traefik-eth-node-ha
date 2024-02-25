@@ -1,0 +1,54 @@
+http:
+  routers:
+    eth1:
+      entryPoints:
+        - "http"
+      rule: "Host(`eth1`)"
+      service: eth1
+    eth1-ws:
+      entryPoints:
+        - "http"
+      rule: "Host(`eth1`) && Headers(`Connection`, `Upgrade`) && Headers(`Upgrade`, `websocket`) && HeadersRegexp(`Sec-WebSocket-Key`, `.*`)"
+      service: eth1-ws
+    eth2:
+      entryPoints:
+        - "http"
+      rule: "Host(`eth2`)"
+      service: eth2
+  services:
+    eth1:
+      loadBalancer:
+        healthCheck:
+          path: /hooks/ec
+          port: 9000
+          interval: "2500ms"
+          timeout: "500ms"
+        servers:
+          - url: "http://192.168.60.40:8545"
+          - url: "http://192.168.60.69:8545"
+        sticky:
+          cookie: {}
+    eth1-ws:
+      loadBalancer:
+        healthCheck:
+          path: /hooks/ec
+          port: 9000
+          interval: "2500ms"
+          timeout: "500ms"
+        servers:
+          - url: "http://192.168.60.40:8546"
+          - url: "http://192.168.60.69:8546"
+        sticky:
+          cookie: {}
+    eth2:
+      loadBalancer:
+        healthCheck:
+          path: /hooks/cc
+          port: 9000
+          interval: "2500ms"
+          timeout: "500ms"
+        servers:
+          - url: "http://192.168.60.40:5052"
+          - url: "http://192.168.60.69:5052"
+        sticky:
+          cookie: {}
