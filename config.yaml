@@ -21,7 +21,7 @@ http:
         healthCheck:
           path: /hooks/ec
           port: 9000
-          interval: "2500ms"
+          interval: "5000ms"
           timeout: "500ms"
         servers:
           - url: "http://192.168.60.40:8545"
@@ -33,7 +33,7 @@ http:
         healthCheck:
           path: /hooks/ec
           port: 9000
-          interval: "2500ms"
+          interval: "5000ms"
           timeout: "500ms"
         servers:
           - url: "http://192.168.60.40:8546"
@@ -45,8 +45,8 @@ http:
         healthCheck:
           path: /hooks/cc
           port: 9000
-          interval: "2500ms"
-          timeout: "500ms"
+          interval: "6000ms"
+          timeout: "1500ms"
         servers:
           - url: "http://192.168.60.40:5052"
           - url: "http://192.168.60.69:5052"
