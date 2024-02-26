@@ -17,6 +17,20 @@ http:
       service: eth2
   services:
     eth1:
+      failover:
+        healthCheck: {}
+        service: eth1-main
+        fallback: eth1-backup
+    eth1-main:
+      loadBalancer:
+        healthCheck:
+          path: /hooks/ec
+          port: 9000
+          interval: "5000ms"
+          timeout: "500ms"
+        servers:
+          - url: "http://192.168.60.69:8545"
+    eth1-backup:
       loadBalancer:
         healthCheck:
           path: /hooks/ec
@@ -25,10 +39,21 @@ http:
           timeout: "500ms"
         servers:
           - url: "http://192.168.60.40:8545"
-          - url: "http://192.168.60.69:8545"
-        sticky:
-          cookie: {}
     eth1-ws:
+      failover:
+        healthCheck: {}
+        service: eth1-ws-main
+        fallback: eth1-ws-backup    
+    eth1-ws-main:
+      loadBalancer:
+        healthCheck:
+          path: /hooks/ec
+          port: 9000
+          interval: "5000ms"
+          timeout: "500ms"
+        servers:
+          - url: "http://192.168.60.69:8546"
+    eth1-ws-backup:
       loadBalancer:
         healthCheck:
           path: /hooks/ec
@@ -37,10 +62,21 @@ http:
           timeout: "500ms"
         servers:
           - url: "http://192.168.60.40:8546"
-          - url: "http://192.168.60.69:8546"
-        sticky:
-          cookie: {}
     eth2:
+      failover:
+        healthCheck: {}
+        service: eth2-main
+        fallback: eth2-backup          
+    eth2-main:
+      loadBalancer:
+        healthCheck:
+          path: /hooks/cc
+          port: 9000
+          interval: "6000ms"
+          timeout: "1500ms"
+        servers:
+          - url: "http://192.168.60.69:5052"
+    eth2-backup:
       loadBalancer:
         healthCheck:
           path: /hooks/cc
@@ -49,6 +85,3 @@ http:
           timeout: "1500ms"
         servers:
           - url: "http://192.168.60.40:5052"
-          - url: "http://192.168.60.69:5052"
-        sticky:
-          cookie: {}
