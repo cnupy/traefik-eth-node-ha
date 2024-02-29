@@ -3,17 +3,17 @@ http:
     eth1:
       entryPoints:
         - "http"
-      rule: "Host(`eth1`)"
+      rule: "Host(`{{env "EC_LISTEN_HOST"}}`)"
       service: eth1
     eth1-ws:
       entryPoints:
         - "http"
-      rule: "Host(`eth1`) && Headers(`Connection`, `Upgrade`) && Headers(`Upgrade`, `websocket`) && HeadersRegexp(`Sec-WebSocket-Key`, `.*`)"
+      rule: "Host(`{{env "EC_LISTEN_HOST"}}`) && Headers(`Connection`, `Upgrade`) && Headers(`Upgrade`, `websocket`) && HeadersRegexp(`Sec-WebSocket-Key`, `.*`)"
       service: eth1-ws
     eth2:
       entryPoints:
         - "http"
-      rule: "Host(`eth2`)"
+      rule: "Host(`{{env "CC_LISTEN_HOST"}}`)"
       service: eth2
   services:
     eth1:
@@ -29,7 +29,7 @@ http:
           interval: "5000ms"
           timeout: "500ms"
         servers:
-          - url: "http://192.168.60.69:8545"
+          - url: {{env "EC_MAIN_SCHEME"}}://{{env "EC_MAIN_HOST"}}:{{env "EC_MAIN_PORT"}}
     eth1-backup:
       loadBalancer:
         healthCheck:
@@ -38,7 +38,7 @@ http:
           interval: "5000ms"
           timeout: "500ms"
         servers:
-          - url: "http://192.168.60.40:8545"
+          - url: {{env "EC_FALLBACK_SCHEME"}}://{{env "EC_FALLBACK_HOST"}}:{{env "EC_FALLBACK_PORT"}}
     eth1-ws:
       failover:
         healthCheck: {}
@@ -52,7 +52,7 @@ http:
           interval: "5000ms"
           timeout: "500ms"
         servers:
-          - url: "http://192.168.60.69:8546"
+          - url: {{env "EC_MAIN_SCHEME"}}://{{env "EC_MAIN_HOST"}}:{{env "EC_MAIN_WS_PORT"}}
     eth1-ws-backup:
       loadBalancer:
         healthCheck:
@@ -61,7 +61,7 @@ http:
           interval: "5000ms"
           timeout: "500ms"
         servers:
-          - url: "http://192.168.60.40:8546"
+          - url: {{env "EC_FALLBACK_SCHEME"}}://{{env "EC_FALLBACK_HOST"}}:{{env "EC_FALLBACK_WS_PORT"}}
     eth2:
       failover:
         healthCheck: {}
@@ -75,7 +75,7 @@ http:
           interval: "6000ms"
           timeout: "1500ms"
         servers:
-          - url: "http://192.168.60.69:5052"
+          - url: {{env "CC_MAIN_SCHEME"}}://{{env "CC_MAIN_HOST"}}:{{env "CC_MAIN_PORT"}}
     eth2-backup:
       loadBalancer:
         healthCheck:
@@ -84,4 +84,4 @@ http:
           interval: "6000ms"
           timeout: "1500ms"
         servers:
-          - url: "http://192.168.60.40:5052"
+          - url: {{env "CC_FALLBACK_SCHEME"}}://{{env "CC_FALLBACK_HOST"}}:{{env "CC_FALLBACK_PORT"}}

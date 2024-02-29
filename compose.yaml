@@ -1,0 +1,47 @@
+version: "3.9"
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: 100m
+      max-file: "3"
+      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
+
+services:
+  traefik:
+    image: traefik:${TRAEFIK_TAG:-latest}
+    container_name: traefik
+    restart: unless-stopped
+    environment:
+      - EC_LISTEN_HOST=${EC_LISTEN_HOST}
+      - CC_LISTEN_HOST=${CC_LISTEN_HOST}
+      - EC_MAIN_SCHEME=${EC_MAIN_SCHEME}
+      - EC_MAIN_HOST=${EC_MAIN_HOST}
+      - EC_MAIN_PORT=${EC_MAIN_PORT}
+      - EC_MAIN_WS_PORT=${EC_MAIN_WS_PORT}
+      - CC_MAIN_SCHEME=${CC_MAIN_SCHEME}
+      - CC_MAIN_HOST=${CC_MAIN_HOST}
+      - CC_MAIN_PORT=${CC_MAIN_PORT}
+      - EC_FALLBACK_SCHEME=${EC_FALLBACK_SCHEME}
+      - EC_FALLBACK_HOST=${EC_FALLBACK_HOST}
+      - EC_FALLBACK_PORT=${EC_FALLBACK_PORT}
+      - EC_FALLBACK_WS_PORT=${EC_FALLBACK_WS_PORT}
+      - CC_FALLBACK_SCHEME=${CC_FALLBACK_SCHEME}
+      - CC_FALLBACK_HOST=${CC_FALLBACK_HOST}
+      - CC_FALLBACK_PORT=${CC_FALLBACK_PORT}
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "${TRAEFIK_LISTEN_IP:-0.0.0.0}:80:80"
+      - "${TRAEFIK_LISTEN_IP:-0.0.0.0}:443:443"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config.yaml:/var/config/config.yaml:ro
+    command:
+      - --log.level=${LOG_LEVEL:-info}
+      - --providers.file.filename=/var/config/config.yaml
+      - --entrypoints.http.address=:${TRAEFIK_WEB_HTTP_PORT:-80}
+      - --entrypoints.https.address=:${TRAEFIK_WEB_HTTP_PORT:-443}
+    <<: *logging

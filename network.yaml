@@ -1,4 +1,10 @@
+services:
+  traefik:
+    networks:
+      default:
+        aliases: ["${EC_LISTEN_HOST:-eth1}", "${CC_LISTEN_HOST:-eth2}"]
+
 networks:
   default:
-    name: ssv
-    external: true
+    name: "${NETWORK_NAME:-default_network}"
+    external: "${NETWORK_IS_EXTERNAL:-false}"
